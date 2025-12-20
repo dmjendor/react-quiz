@@ -134,6 +134,7 @@ progress {
 
 .btn-option:not([disabled]):hover {
   transform: translateX(1.2rem);
+  color: white;
 }
 
 .btn[disabled]:hover {
