@@ -1,5 +1,5 @@
 import Options from "./Options";
-function Question({ question, dispatch, answer }) {
+function Question({ question, dispatch, answer, points }) {
   return (
     <div className="question">
       <h4>{question.question}</h4>
