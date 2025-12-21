@@ -8,7 +8,10 @@ import Question from "./components/Question";
 import NextButton from "./components/NextButton";
 import Progress from "./components/Progress";
 import FinishScreen from "./components/FinishScreen";
+import Timer from "./components/Timer";
+import Footer from "./components/Footer";
 
+const SECONDS_PER_QUESTION = 30;
 const initialState = {
   questions: [],
   status: "loading" | "error" | "ready" | "finished" | "active",
@@ -16,6 +19,7 @@ const initialState = {
   answer: null,
   points: 0,
   highscore: 0,
+  secondsRemaining: null,
 };
 function reducer(state, action) {
   switch (action.type) {
@@ -28,7 +32,11 @@ function reducer(state, action) {
     case "dataFailed":
       return { ...state, status: "error" };
     case "start":
-      return { ...state, status: "active" };
+      return {
+        ...state,
+        status: "active",
+        secondsRemaining: state.questions.length * SECONDS_PER_QUESTION,
+      };
     case "newAnswer":
       const question = state.questions.at(state.index);
       const points =
@@ -56,9 +64,15 @@ function reducer(state, action) {
     case "restart":
       return {
         ...initialState,
-        questions: state.question,
+        questions: state.questions,
         highscore: state.highscore,
         status: "ready",
+      };
+    case "updateTimer":
+      return {
+        ...state,
+        secondsRemaining: state.secondsRemaining - 1,
+        status: state.secondsRemaining === 0 ? "finished" : state.status,
       };
     default:
       throw new Error("Unknown Action");
@@ -66,8 +80,10 @@ function reducer(state, action) {
 }
 
 export default function App() {
-  const [{ status, questions, index, answer, points, highscore }, dispatch] =
-    useReducer(reducer, initialState);
+  const [
+    { status, questions, index, answer, points, highscore, secondsRemaining },
+    dispatch,
+  ] = useReducer(reducer, initialState);
   const numQuestions = questions.length;
   const maxPossiblePoints = questions.reduce(
     (prev, cur) => prev + cur.points,
@@ -103,12 +119,15 @@ export default function App() {
               dispatch={dispatch}
               answer={answer}
             />
-            <NextButton
-              dispatch={dispatch}
-              answer={answer}
-              index={index}
-              numQuestions={numQuestions}
-            />
+            <Footer>
+              <Timer secondsRemaining={secondsRemaining} dispatch={dispatch} />
+              <NextButton
+                dispatch={dispatch}
+                answer={answer}
+                index={index}
+                numQuestions={numQuestions}
+              />
+            </Footer>
           </>
         )}
         {status === "finished" && (
