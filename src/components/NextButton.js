@@ -1,15 +1,15 @@
-export default function NextButton({ dispatch, answer, index, numQuestions }) {
+import { useQuiz } from "../context/QuizContext";
+
+export default function NextButton() {
+  const { answer, index, numQuestions, onNextQuestion, onFinishQuiz } =
+    useQuiz();
   if (answer === null) return null;
 
   if (index < numQuestions - 1) {
     return (
       <button
         className="btn btn-ui"
-        onClick={() =>
-          dispatch({
-            type: "nextQuestion",
-          })
-        }
+        onClick={onNextQuestion}
       >
         Next
       </button>
@@ -19,11 +19,7 @@ export default function NextButton({ dispatch, answer, index, numQuestions }) {
     return (
       <button
         className="btn btn-ui"
-        onClick={() =>
-          dispatch({
-            type: "finishQuiz",
-          })
-        }
+        onClick={onFinishQuiz}
       >
         Finish
       </button>
